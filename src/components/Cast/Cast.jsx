@@ -4,30 +4,35 @@ import { getMovieCredits } from '../Services/Services';
 import { CastImage } from './Cast.styled';
 
 function Cast() {
-  const [cast, setCast] = useState([]);
+  const [cast, setCast] = useState(null);
   const { id } = useParams();
   useEffect(() => {
-    getMovieCredits(id).then(res => setCast([...res]));
+    getMovieCredits(id).then(setCast);
   }, [id]);
+
+  const imageSeacrh = profile_path => {
+    if (profile_path === null) {
+      return 'https://image.tmdb.org/t/p/original/qLJm1n615JinCuizZSxbZiVtEr8.jpg';
+    }
+
+    return `https://image.tmdb.org/t/p/original${profile_path}`;
+  };
 
   return (
     <>
-      <ul>
-        {cast === undefined
-          ? null
-          : cast.map(item => {
-              return (
-                <li key={item.id}>
-                  <CastImage
-                    src={`https://image.tmdb.org/t/p/original${item.profile_path}`}
-                    alt={item.name}
-                  />
-                  <h3>{item.name}</h3>
-                  <p>{item.character}</p>
-                </li>
-              );
-            })}
-      </ul>
+      {cast && (
+        <ul>
+          {cast.map(({ id, name, character, profile_path }) => {
+            return (
+              <li key={id}>
+                <CastImage src={imageSeacrh(profile_path)} alt={name} />
+                <h3>{name}</h3>
+                <p>{character}</p>
+              </li>
+            );
+          })}
+        </ul>
+      )}
     </>
   );
 }

@@ -18,7 +18,7 @@ function MoviesDetails() {
   const [movie, setMovie] = useState({});
   const { id } = useParams();
   useEffect(() => {
-    getMoviesById(id).then(res => setMovie({ ...res }));
+    getMoviesById(id).then(setMovie);
   }, [id]);
 
   const genresMovie = movie => {

@@ -8,10 +8,12 @@ import {
   SearchFormBtn,
 } from './Movies.styled';
 import { Galleryitem, GalleryLink } from '../Home/Home.styled';
+import { useSearchParams } from 'react-router-dom';
 
 function Movies() {
   const [query, setQuery] = useState('');
   const [arrayFilms, setArrayFilms] = useState([]);
+  const [setSearchParams] = useSearchParams();
 
   const handelImageChange = e => {
     setQuery(e.currentTarget.value.toLowerCase());
@@ -26,7 +28,11 @@ function Movies() {
     }
 
     SearchMovies(query).then(res => setArrayFilms([...res]));
+    const nextParams = query !== '' ? { query } : {};
+    setSearchParams(nextParams);
   };
+
+  // const updateQueryString = query => {};
 
   return (
     <div>
