@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { Link, Outlet, useParams } from 'react-router-dom';
+import { Link, Outlet, useLocation, useParams } from 'react-router-dom';
 import { getMoviesById } from '../../components/Services/Services';
 import {
   MoviesDetailsContainer,
@@ -15,8 +15,10 @@ import {
 } from './MoviesDetails.styled';
 
 function MoviesDetails() {
+  const location = useLocation();
   const [movie, setMovie] = useState({});
   const { id } = useParams();
+
   useEffect(() => {
     getMoviesById(id).then(setMovie);
   }, [id]);
@@ -27,13 +29,20 @@ function MoviesDetails() {
     }
     return movie.genres.map(a => a.name + ' ');
   };
+  const BackLink = ({ to }) => {
+    return (
+      <Link to={to}>
+        <Back type="button"> Go back</Back>
+      </Link>
+    );
+  };
+
+  const backLinkHref = location?.state?.from ?? '/';
 
   return (
     <>
       <MoviesDetailsContainer>
-        <Link to="/">
-          <Back>Go back</Back>
-        </Link>
+        <BackLink to={backLinkHref}>Back to products</BackLink>
         <MoviesDetailsWrapper>
           <MoviesDetailsImages
             src={`https://image.tmdb.org/t/p/original${movie.poster_path}`}

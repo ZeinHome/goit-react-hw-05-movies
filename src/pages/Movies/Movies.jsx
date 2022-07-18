@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import { SearchMovies } from '../../components/Services/Services';
@@ -8,13 +8,15 @@ import {
   SearchFormBtn,
 } from './Movies.styled';
 import { Galleryitem, GalleryLink } from '../Home/Home.styled';
-import { useSearchParams } from 'react-router-dom';
+import { useSearchParams, useLocation, useNavigate } from 'react-router-dom';
 
 function Movies() {
+  const navigate = useNavigate();
+  const location = useLocation();
   const [query, setQuery] = useState('');
   const [arrayFilms, setArrayFilms] = useState([]);
-  const [setSearchParams] = useSearchParams();
-
+  const [, setSearchParams] = useSearchParams();
+  const searchQuery = new URLSearchParams(location.search).get('query');
   const handelImageChange = e => {
     setQuery(e.currentTarget.value.toLowerCase());
   };
@@ -26,17 +28,21 @@ function Movies() {
       toast.error('Введите текст!');
       return;
     }
-
+    navigate({ ...location, search: `query=${query}` });
     SearchMovies(query).then(res => setArrayFilms([...res]));
     const nextParams = query !== '' ? { query } : {};
     setSearchParams(nextParams);
   };
 
-  // const updateQueryString = query => {};
+  useEffect(() => {
+    if (!searchQuery) return;
+
+    SearchMovies(searchQuery).then(setArrayFilms).catch(console.log);
+  }, [searchQuery]);
 
   return (
     <div>
-      <MoviesContainer onClick={handelSubmit}>
+      <MoviesContainer type="button" onClick={handelSubmit}>
         <SearchFormInput
           type="text"
           autocomplete="off"
@@ -51,7 +57,9 @@ function Movies() {
           : arrayFilms.map(item => {
               return (
                 <Galleryitem key={item.id}>
-                  <GalleryLink to={`${item.id}`}>{item.title} </GalleryLink>
+                  <GalleryLink to={`${item.id}`} state={{ from: location }}>
+                    {item.title}{' '}
+                  </GalleryLink>
                 </Galleryitem>
               );
             })}
