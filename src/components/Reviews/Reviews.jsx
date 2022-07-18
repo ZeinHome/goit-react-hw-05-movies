@@ -11,8 +11,8 @@ function Reviews() {
 
   return (
     <>
-      {reviews ? (
-        'We dont have any Reviews '
+      {reviews === null ? (
+        ''
       ) : (
         <ul>
           {reviews.map(item => {
